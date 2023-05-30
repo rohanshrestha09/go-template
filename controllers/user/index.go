@@ -149,7 +149,7 @@ func Login(ctx *gin.Context) {
 		} `json:"data"`
 	}
 
-	ctx.JSON(http.StatusCreated, Response{"Register Successful", struct {
+	ctx.JSON(http.StatusCreated, Response{"Login Successful", struct {
 		Token string `json:"token"`
 	}{
 		Token: authToken,

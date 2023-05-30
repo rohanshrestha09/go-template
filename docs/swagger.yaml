@@ -1,6 +1,249 @@
+definitions:
+  database.GetResponse-models_User:
+    properties:
+      data:
+        $ref: '#/definitions/models.User'
+      message:
+        type: string
+    type: object
+  database.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  dto.LoginDTO:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  enums.ProjectStatus:
+    enum:
+    - OPEN
+    - IN_PROGRESS
+    - COMPLETED
+    type: string
+    x-enum-varnames:
+    - OPEN
+    - IN_PROGRESS
+    - COMPLETED
+  models.Project:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      endDate:
+        $ref: '#/definitions/sql.NullTime'
+      estimatedDuration:
+        type: integer
+      id:
+        type: integer
+      image:
+        type: string
+      imageName:
+        type: string
+      name:
+        type: string
+      published:
+        type: boolean
+      startDate:
+        $ref: '#/definitions/sql.NullTime'
+      status:
+        $ref: '#/definitions/enums.ProjectStatus'
+      updatedAt:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+      userId:
+        type: integer
+    type: object
+  models.User:
+    properties:
+      bio:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      image:
+        type: string
+      imageName:
+        type: string
+      name:
+        type: string
+      projects:
+        items:
+          $ref: '#/definitions/models.Project'
+        type: array
+      provider:
+        type: string
+      updatedAt:
+        type: string
+    required:
+    - provider
+    type: object
+  sql.NullTime:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  user.Login.Response:
+    properties:
+      data:
+        properties:
+          token:
+            type: string
+        type: object
+      message:
+        type: string
+    type: object
+  user.Register.Response:
+    properties:
+      data:
+        properties:
+          token:
+            type: string
+        type: object
+      message:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /auth:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.GetResponse-models_User'
+      security:
+      - Bearer: []
+      summary: Get auth profile
+      tags:
+      - Auth
+    patch:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Name
+        in: formData
+        name: name
+        type: string
+      - description: Description
+        in: formData
+        name: bio
+        type: string
+      - description: File to upload
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/database.Response'
+      security:
+      - Bearer: []
+      summary: Update profile
+      tags:
+      - Auth
+  /user/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.GetResponse-models_User'
+      summary: Get a user
+      tags:
+      - User
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request Body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/dto.LoginDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.Login.Response'
+      summary: Login User
+      tags:
+      - User
+  /user/register:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Name
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: Password
+        in: formData
+        minLength: 8
+        name: password
+        required: true
+        type: string
+      - description: Confirm Password
+        in: formData
+        minLength: 8
+        name: confirmPassword
+        required: true
+        type: string
+      - description: File to upload
+        in: formData
+        name: image
+        type: file
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/user.Register.Response'
+      summary: Create an account
+      tags:
+      - User
 securityDefinitions:
   Bearer:
     in: header

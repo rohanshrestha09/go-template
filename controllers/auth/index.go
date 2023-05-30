@@ -86,6 +86,6 @@ func Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, response("Project Updated"))
+	ctx.JSON(http.StatusCreated, response("Profile Updated"))
 
 }

@@ -3,7 +3,382 @@
     "info": {
         "contact": {}
     },
-    "paths": {},
+    "paths": {
+        "/auth": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Get auth profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.GetResponse-models_User"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Update profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Description",
+                        "name": "bio",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "image",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/database.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Login User",
+                "parameters": [
+                    {
+                        "description": "Request Body",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.LoginDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/user.Login.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/register": {
+            "post": {
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Create an account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "minLength": 8,
+                        "type": "string",
+                        "description": "Password",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "minLength": 8,
+                        "type": "string",
+                        "description": "Confirm Password",
+                        "name": "confirmPassword",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File to upload",
+                        "name": "image",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/user.Register.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get a user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.GetResponse-models_User"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "database.GetResponse-models_User": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "database.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.LoginDTO": {
+            "type": "object",
+            "required": [
+                "email",
+                "password"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "enums.ProjectStatus": {
+            "type": "string",
+            "enum": [
+                "OPEN",
+                "IN_PROGRESS",
+                "COMPLETED"
+            ],
+            "x-enum-varnames": [
+                "OPEN",
+                "IN_PROGRESS",
+                "COMPLETED"
+            ]
+        },
+        "models.Project": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "$ref": "#/definitions/sql.NullTime"
+                },
+                "estimatedDuration": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "imageName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "published": {
+                    "type": "boolean"
+                },
+                "startDate": {
+                    "$ref": "#/definitions/sql.NullTime"
+                },
+                "status": {
+                    "$ref": "#/definitions/enums.ProjectStatus"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "required": [
+                "provider"
+            ],
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "imageName": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projects": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Project"
+                    }
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "sql.NullTime": {
+            "type": "object",
+            "properties": {
+                "time": {
+                    "type": "string"
+                },
+                "valid": {
+                    "description": "Valid is true if Time is not NULL",
+                    "type": "boolean"
+                }
+            }
+        },
+        "user.Login.Response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "token": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "user.Register.Response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "token": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    },
     "securityDefinitions": {
         "Bearer": {
             "type": "apiKey",
